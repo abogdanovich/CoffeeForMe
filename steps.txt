@@ -1,0 +1,10 @@
+#prepare bash script `run_before_fun.sh` with the following:
+
+1. create virtual env: virtualenv coffeforme
+2. git clone code: `git clone https://github.com/abogdanovich/CoffeeForMe.git`
+3. install all requirements from requirements.txt: `pip install -r
+   requirements.txt`
+4. run test cases > CoffeForME test suit: db\functionality
+5. show the results and invite user to run own tests using 2 method: params or
+   interactive (ask about each step > readme.md)
+6. add some tricks for barman with tips
