@@ -5,12 +5,14 @@
  
 **Скрипт должен иметь возможность:**
 1. Принимать следующие входные параметры:
+
 - Имя пользователя
 - Должность: продавец или мэнэджер
 - Напиток – доступен только если должность продавец	
 - Дополнительные ингредиенты для напитка: сахар, сливки, корица – доступен только если должность продавец
 - Получить цену - доступен только если должность продавец
 - Сохранить продажу - доступен только если должность продавец
+
 2. Сохранять результаты продаж для каждого продавца
 3. Предоставлять суммарные результаты продаж в виде таблицы при условии, что программу запускает мэнэджер:
 
@@ -29,8 +31,26 @@
 5. Программа ведет лог событий
 
 **Tech stack**
-- sqlite db (easy to share using file, no extra pip setup)
+```
+- sqlite db 
 - python 2.7 
-- pytest (test framework)
+- pytest 
 - virtualenv
 - bash scripting
+```
+
+**Checklist**
+[x] param - name - checking (english alphabet only, exclude any numbers and system symbols)
+[x] member checking: (barman, manager)
+[x] manager: profit table reviews
+[x] barman: drink options 
+[x] barman: drink price 
+[x] barman: save order functions
+[x] barman: drink tips for common bank
+[x] barman: daily tips \ check \ calc: total / number of barmans
+[x] general: operations logging
+[x] general: db testing \ table-insert-update-delete-close
+[x] general: exception catch: no db \ wrong params \ etc....  
+[x] ...
+[x] ...
+[x] ...
