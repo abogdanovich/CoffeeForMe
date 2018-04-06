@@ -3,3 +3,6 @@ include/*
 lib/*
 local/*
 pip-selfcheck.json
+CoffeeForMe/coffee.db
+*.pyc
+CoffeeForMe/*.pyc
