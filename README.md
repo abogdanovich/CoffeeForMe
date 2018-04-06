@@ -40,6 +40,7 @@
 ```
 
 **Checklist**
+```
 [x] param - name - checking (english alphabet only, exclude any numbers and system symbols)
 [x] member checking: (barman, manager)
 [x] manager: profit table reviews
@@ -54,3 +55,4 @@
 [x] ...
 [x] ...
 [x] ...
+```
