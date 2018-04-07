@@ -1,61 +1,86 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-""" File name: coffee.py
+"""File name: coffee.py
     Author:	Alex Bogdaovich
 	Email: bogdanovich.alex@gmail.com
-	Date created:	4/19/2018
-	Python Version: 2.7
 	Project classes are placed here.
-	
 """
 
+import sqlite3
+
 class coffeeTeam(object):
-	""" Base class """	
-	def __init__(self, name, role):
-		""" save team member with his name and company role into db """
-		#roles: manager, barman
+	"""Base class"""	
+	def __init__(self, name=None, role=None, db="db.db"):
+		"""save team member with his name and company role into db"""
+		
 		self.name = name
 		self.role = role
-		pass
-	def get_member(self):
-		""" get the list of all team members """
-		return self.name, self.role
+		self.db = db
+		if (name is not None):
+			self.add_member()
+		
+	def get_members(self):
+		"""get the list of all team members"""
+		
+		connection = sqlite3.connect(self.db)
+		with connection:
+			result = connection.execute("SELECT * FROM team")
+			data = result.fetchall()
+			#print "added a new member: id {}".format(data[0])
+			return data
+			
+		
 	def remove_member(self):
-		""" remove employee from DB """
+		"""remove employee from DB"""
+		
 		pass
+	def add_member(self):
+		connection = sqlite3.connect(self.db)
+		with connection:
+			connection.execute('''CREATE TABLE IF NOT EXISTS team (
+							   id INTEGER PRIMARY KEY AUTOINCREMENT,
+							   name TEXT,
+							   role TEXT
+							   )''')
+			
+			if (self.role is None):
+				self.role = 'unknown'
+			connection.execute("INSERT INTO team (name, role) VALUES (?,?)", (self.name, self.role))
+			result = connection.execute("SELECT last_insert_rowid()")
+			data = result.fetchone()
+			print "added a new member: id {}".format(data[0])
 	
 class coffeeManager(coffeeTeam):
-	""" Manager class with appropriate functions """
+	"""Manager class with appropriate functions"""
 	def get_revenue_report(self):
-		""" generate Manager revenue report in summary table """
+		"""generate Manager revenue report in summary table"""
+		
 		pass
+	def get_members(self, role="manager"):
+		"""get the list of all Managers"""
+		
+		connection = sqlite3.connect(self.db)
+		with connection:
+			result = connection.execute("SELECT * FROM team WHERE role=?",(role,))
+			data = result.fetchall()
+			return data
 	
 class coffeeBarista(coffeeTeam):
-	""" Manager class with appropriate functions """
+	"""Manager class with appropriate functions"""
+	
 	def get_drink_price(self, drink_id):
-		""" return drink price """
+		"""return drink price"""
+		
 		pass
 	def make_order(self, date, count, price, seller_id, drink_id):
-		""" make order and save it into DB """
+		"""make order and save it into DB"""
+		
 		pass
-	
-class coffeeBar(object):
-	""" Base Bar class to work with DB"""
-	def __init__(self, name, price, options):
-		""" base init class to add a new drink into DB """
-		#save drink into db
-		self.name = name
-		self.price = price
-		self.options = options
-		pass
-	def remove_drink(self, drink_id):
-		""" remove a drink from DB """
-		pass
-	def get_drink_list(self):
-		""" get the list of all saved drinks in DB """
-		pass
-	def update_drink(self, drink_id, name, price, options):
-		""" update drink with a fresh data """
-		pass
-	
+	def get_members(self, role="barista"):
+		"""get the list of all Barista"""
+		
+		connection = sqlite3.connect(self.db)
+		with connection:
+			result = connection.execute("SELECT * FROM team WHERE role=?",(role,))
+			data = result.fetchall()
+			return data
