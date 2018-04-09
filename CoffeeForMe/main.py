@@ -7,6 +7,12 @@
 
 from coffee import coffeeTeam, coffeeManager, coffeeBarista
 import sys
+import func
+
+# session variables
+session_user = None
+session_role = None
+session_id = None
 
 if __name__ == '__main__':
 	if (len(sys.argv) <= 1) or (sys.argv[1] == "-h"):
@@ -18,13 +24,15 @@ if __name__ == '__main__':
 		Options and arguments without login options:
 
 		-i		: interactive mode
-		
-		-a 		: create a new coffee team member (coffee.py -a manager Alex passwd)
-		-u		: login under specific user (coffee.py -u Alex passwd)
+		-a 		: create a new coffee team member `coffee.py -a manager Alex passwd`
 		____________________________________________________
 		Options and arguments under logged user:
-		-r		: view revenue report
-		-c		: save barista's order 
+		-u		: run a command under user:
+				`coffee.py -u Alex passwd report`
+				`coffee.py -u Alex passwd get_drinks`
+				`coffee.py -u Alex passwd add_drink {drink_name} {drink_price}`
+				`coffee.py -u Alex passwd check_drink {drink_name} {drink_options}`
+				`coffee.py -u Alex passwd order_drink {drink_name} {drink_options}`
 		____________________________________________________
 		"""
 	else:
@@ -34,56 +42,62 @@ if __name__ == '__main__':
 				# coffe.py -a manager Alex pass123
 				manager = coffeeManager(sys.argv[3],sys.argv[2], sys.argv[4])
 			elif (sys.argv[2] == "barista"):
-				# coffe.py -a barista Alex pass123
 				barista = coffeeBarista(sys.argv[3],sys.argv[2], sys.argv[4])
 			else:
-				print "wrong team member role"
-		elif (sys.argv[1] == "-d"):
-			"""add a new drink into db"""
-			pass
-			
+				print "Please choose the right member role: manager|barista"			
 		if (sys.argv[1] == "-i"):
-			"""interactive mode"""
+			# interactive mode
 			while True:
-				print """
-				1 - Add a new CoffeForMe team member
-				2 - Login
-				0 - Exit
-				"""
+				if (session_user):
+					# check user session permissions
+					if (session_role == "manager"):
+						func.show_manager_menu(session_user, session_role)
+					else:
+						func.show_barista_menu(session_user, session_role)
+				else:
+					func.show_regular_menu()
 				selection = raw_input("Choose the menu item below: ")
 				if (not selection) or (selection == "q"): break
 				elif (selection == "1"):
-					"""add a new coffee team member"""
-					new_member = []
-					user_input = raw_input("Let's add a new CoffeeForMe team member: [manager|barista]? ")
-					if (user_input == "manager"):
-						# ask all what we need
-						new_member.append(user_input)
-						user_input = raw_input("Please enter user name and password ")
-						user_input = user_input.split()
-						new_member.append(user_input[0])
-						new_member.append(user_input[1])
-						# create a new team member
-						barista = coffeeTeam(new_member[1],new_member[0],new_member[2])
-					elif (user_input == "barista"):
-						# ask all what we need
-						new_member.append(user_input)
-						user_input = raw_input("Please enter user name and password ")
-						user_input = user_input.split()
-						new_member.append(user_input[0])
-						new_member.append(user_input[1])
-						# create a new team member
-						manager = coffeeTeam(new_member[1],new_member[0],new_member[2])
+					# add a new coffee team member
+					func.add_new_team_member()
 				elif (selection == "2"):
-					# try to login
-					user_input = raw_input("Please enter user name and password ")
-					user_input = user_input.split()
-					member = coffeeTeam()
-					res = member.get_member(user_input[0], user_input[1])
-					print res #returned 4 ????
+					
+					if (session_user):
+						session_user = None
+						session_role = None
+						session_id = None
+					else:
+						try_to_login = func.try_to_login()
+						if (try_to_login):
+							session_id = try_to_login[0]
+							session_user = try_to_login[1]
+							session_role = try_to_login[2]
+						
 				elif (selection == "0"):
 					break
-
 				
-	
-	
+				elif (selection == "3"):
+					# create a new revenue report
+					if (session_role != "manager"):
+						print "You can't run this option"
+						continue
+					else:
+						# make the final report
+						func.get_revenue_report()
+				elif (selection == "4"):
+					# check a drink price and save an order
+					if (session_role != "barista"):
+						print "You can't run this option"
+						continue
+					else:
+						# make the order and save it
+						func.save_order(session_id)
+
+				elif (selection == "9"):
+					# add a new drink into db
+					if (session_role != "manager"):
+						print "You can't run this option"
+						continue
+					else:
+						func.add_new_drink()
