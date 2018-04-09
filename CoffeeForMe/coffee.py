@@ -74,7 +74,7 @@ class coffeeManager(coffeeTeam):
 			connection = sqlite3.connect(self.db)
 			with connection:
 				result = connection.execute("""
-					SELECT team.name as barman, COUNT(*) as sales, SUM(orders.price) as total
+					SELECT team.id, team.name as barman, COUNT(*) as sales, SUM(orders.price) as total
 					FROM 'orders', 'team' 
 					WHERE orders.seller_id=team.id
 					GROUP BY team.id
@@ -131,11 +131,14 @@ class coffeeManager(coffeeTeam):
 class coffeeBarista(coffeeTeam):
 	"""Manager class with appropriate functions"""
 	
-	def get_drink_list(self):
+	def get_drink_list(self, drink_id=None):
 		"""return drink price"""
 		connection = sqlite3.connect(self.db)
 		with connection:
-			result = connection.execute("SELECT * FROM drink")
+			if drink_id != None:
+				result = connection.execute("SELECT * FROM drink WHERE id=?",(drink_id))
+			else:
+				result = connection.execute("SELECT * FROM drink")
 			data = result.fetchall()
 			return data		
 		

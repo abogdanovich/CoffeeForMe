@@ -30,8 +30,8 @@ if __name__ == '__main__':
 		-u		: run a command under user:
 				`coffee.py -u Alex passwd report`
 				`coffee.py -u Alex passwd get_drinks`
+				`coffee.py -u Alex passwd get_options`
 				`coffee.py -u Alex passwd add_drink {drink_name} {drink_price}`
-				`coffee.py -u Alex passwd check_drink {drink_name} {drink_options}`
 				`coffee.py -u Alex passwd order_drink {drink_name} {drink_options}`
 		____________________________________________________
 		"""
@@ -44,7 +44,36 @@ if __name__ == '__main__':
 			elif (sys.argv[2] == "barista"):
 				barista = coffeeBarista(sys.argv[3],sys.argv[2], sys.argv[4])
 			else:
-				print "Please choose the right member role: manager|barista"			
+				func.log("error", "Wrong member's role is selected: manager|barista")
+		if (sys.argv[1] == "-u"):
+			#run command under user login + passwd {command}
+			# try to log in
+			user = func.try_to_login(sys.argv[2],sys.argv[3])
+			if not user: 
+				func.log("error", "Wrong user or password is used")
+			else:
+				if (sys.argv[4] == "report"):
+					if user[2] == "manager":
+						func.get_revenue_report()
+				elif (sys.argv[4] == "get_drinks"):
+					drinks = func.get_drinks()
+					for drink in drinks:
+						# show drinks with id - name - price
+						print "[{}] - {} $({})".format(drink[0], drink[1], drink[2])
+				elif (sys.argv[4] == "add_drink"):
+					if user[2] == "manager":
+						# regular add drink into db under manager
+						func.add_new_drink(sys.argv[5], sys.argv[6])
+				#elif (sys.argv[4] == "get_optons"):
+				#	func.get_options()
+				#	print "asd"
+				elif (sys.argv[4] == "order_drink"):
+					# make an order under barista
+					if user[2] == "barista":
+						# def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
+						func.save_order(user[0], sys.argv[5], list(sys.argv[5]), user[0])
+						
+						
 		if (sys.argv[1] == "-i"):
 			# interactive mode
 			while True:
@@ -56,27 +85,25 @@ if __name__ == '__main__':
 						func.show_barista_menu(session_user, session_role)
 				else:
 					func.show_regular_menu()
-				selection = raw_input("Choose the menu item below: ")
+				selection = raw_input("Select menu option: ")
 				if (not selection) or (selection == "q"): break
 				elif (selection == "1"):
 					# add a new coffee team member
 					func.add_new_team_member()
 				elif (selection == "2"):
-					
 					if (session_user):
 						session_user = None
 						session_role = None
 						session_id = None
+						func.log("warning", "User is logged out")
 					else:
 						try_to_login = func.try_to_login()
 						if (try_to_login):
 							session_id = try_to_login[0]
 							session_user = try_to_login[1]
 							session_role = try_to_login[2]
-						
 				elif (selection == "0"):
 					break
-				
 				elif (selection == "3"):
 					# create a new revenue report
 					if (session_role != "manager"):
