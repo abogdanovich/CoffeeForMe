@@ -8,6 +8,7 @@
 from coffee import coffeeTeam, coffeeManager, coffeeBarista
 import datetime
 import logging
+from prettytable import PrettyTable
 
 logging.basicConfig(filename='log/log.log',level=logging.DEBUG)
 
@@ -123,19 +124,20 @@ def try_to_login(name=None, passwd=None):
 	return data		
 		
 def get_revenue_report():
+	x = PrettyTable()
 	# get summary revenue table for manager
 	log("info", "generated revenue menu")
 	manager = coffeeManager()
-	report = manager.get_revenue_report()						
-	grand_total = 0
-	print("____________________________________")
-	print("Name	-	N of sales	-	Total value")
-	for order in report:
-		print("[{}] - {}	-	{}		-		${}".format(order[0], order[1], order[2], order[3]))
-		grand_total += order[2]
-	print("Grand Total: grand_total:	${}".format(grand_total))
-	print("____________________________________")
+	report = manager.get_revenue_report()
+	if report:
+		grand_total = 0
+		x.field_names = ["Barman", "Number os sales", "Total $"]
+		for order in report:
+			x.add_row([order[1], order[2], order[3]])
+			grand_total += order[2]
+		print x
 	
+		
 def get_drinks():
 	barista = coffeeBarista()
 	drink_list = barista.get_drink_list()
@@ -176,9 +178,12 @@ def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
 			log("warnig", "The list of drinks is empty!")
 		else:
 			try:
+				x = PrettyTable()
+				x.field_names = ["ID", "Drink", "Price"]					
 				for key, drink in enumerate(drink_list):
 					# id name price
-					print "[{}] - {} (${})".format(key, drink[1], drink[2])
+					x.add_row([key, drink[1], drink[2]])
+				print(x)
 				user_drink = raw_input("Please select a drink ")
 				if (int(user_drink) not in range(0,len(drink_list))):
 					log("error", "Wrong drink index")
@@ -196,8 +201,12 @@ def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
 					drink_order_options = []
 					while True:
 						print "Drink options | press q to exit"
+						
+						x = PrettyTable()
+						x.field_names = ["ID", "Option", "Price"]
 						for  key, val in enumerate(DRINK_OPTION):
-							print "[{}] - {} ({})".format(key, val, DRINK_OPTION[val])
+							x.add_row([key, val, DRINK_OPTION[val]])
+						print(x)
 						print "[q] - Exit"
 						user_drink_options = raw_input("Please select extra options ")
 						if (user_drink_options == "q"): break
@@ -209,13 +218,10 @@ def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
 					if drink_order_options != []:
 						for options_price in drink_order_options:
 							drink_price += options_price[1]
-					print("______________________________")
-					print("The final price is: ${}".format(drink_price))
-					print("")
-					print("Drink details:")
-					print(drink_order)
-					print(drink_order_options)
-					print("______________________________")
+					x = PrettyTable()
+					x.field_names = ["Drink", "Options", "Price"]
+					x.add_row([drink_order, drink_order_options, drink_price])
+					print(x)
 					# ask about save order?
 					save_order = raw_input("Would you like to save order? (y|n) ")
 					if (save_order == "y"): 

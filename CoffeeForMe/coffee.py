@@ -67,6 +67,7 @@ class coffeeTeam(object):
 class coffeeManager(coffeeTeam):
 	"""Manager class with appropriate functions"""
 	
+	# TODO - FAILED when no records in orders!!!! fix that
 	def get_revenue_report(self):
 		"""generate Manager revenue report in summary table"""
 		data = False
