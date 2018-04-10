@@ -18,7 +18,15 @@ coffeeManager test suit:
 manager_tc01: add a new drink with correct params
 manager_tc02: add a new drink (negative)
 manager_tc03: make order as non barista(negative)
+manager_tc04: check the GRAND TOTAL 
 """
+
+def test_drop_init():
+	# drop table if exists
+	member = coffeeTeam()
+	result = member.drop_all_tables(test_db)
+	assert result == True
+	
 def init():
 	# init accounts
 	manager = coffeeManager()
@@ -44,7 +52,12 @@ def test_manager_tc03():
 	assert result == False
 	
 def test_manager_tc04():
-	# make order as non barista
+	# make order and save
 	barista = coffeeBarista()
-	result = barista.make_order("barista", "12:12:12 - 04/11/2018", 1.99, 1, 1, test_db)
-	assert result > 0	
+	barista.make_order("barista", "12:12:12 - 04/11/2018", .99, 2, 1, test_db)
+	barista.make_order("barista", "12:12:12 - 04/11/2018", 1.99, 2, 1, test_db)
+	barista.make_order("barista", "12:12:12 - 04/11/2018", 5.99, 2, 1, test_db)
+	barista.make_order("barista", "12:12:12 - 04/11/2018", 10.99, 2, 1, test_db)
+	manager = coffeeManager()
+	result = manager.get_revenue(test_db)
+	assert result == 19.96

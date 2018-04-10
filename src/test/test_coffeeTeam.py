@@ -46,7 +46,6 @@ def test_team_tc02_1():
 	result = manager.add_member("","", "", test_db)
 	assert result == False
 	
-	
 def test_team_tc03():
 	# get exists member details
 	# manager Kate with id = 1
@@ -61,8 +60,7 @@ def test_team_tc04():
 	assert result == False	
 	
 def test_team_tc05():
-	# drop all tables
-		# drop table if exists
+	# drop table if exists
 	member = coffeeTeam()
 	result = member.drop_all_tables(test_db)
 	assert result == True

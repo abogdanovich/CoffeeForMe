@@ -138,7 +138,7 @@ def get_revenue_report():
 	# get summary revenue table for manager
 	log("info", "generated revenue menu")
 	manager = coffeeManager()
-	report = manager.get_revenue_report()
+	report = manager.get_revenue()
 	if report:
 		grand_total = 0
 		x.field_names = ["Barman", "Number os sales", "Total $"]

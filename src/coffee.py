@@ -82,7 +82,7 @@ class coffeeManager(coffeeTeam):
 	"""Manager class with appropriate functions"""
 	
 	# TODO - FAILED when no records in orders!!!! fix that
-	def get_revenue_report(self, db="{}/db.db".format(current_dir)):
+	def get_revenue(self, db="{}/db.db".format(current_dir)):
 		"""generate Manager revenue report in summary table"""
 		data = False
 		try:
@@ -95,13 +95,16 @@ class coffeeManager(coffeeTeam):
 					GROUP BY team.id
 					ORDER BY total DESC
 				""")
-				data = result.fetchall()
+				total = result.fetchall()
+				for item in total:
+					data += item[3]
 				# return: barman | sales | sum 
 		except sqlite3.Error as e:
 			print "DB error: [{}]".format(e)
 		finally:
 			if connection:
 				connection.close()
+		print data
 		return data						
 		
 	def get_member(self, role="manager", db="{}/db.db".format(current_dir)):

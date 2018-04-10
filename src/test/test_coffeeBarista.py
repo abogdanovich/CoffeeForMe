@@ -16,11 +16,23 @@ test_db = "test_db.db"
 """
 coffeeBarista test suit:
 barista_tc01: make order and save
-barista_tc02: make order and do not save
-barista_tc03: get revenue report for manager (negative)
-barista_tc04: get member
-barista_tc05: get member (negative)
-barista_tc06: get drink list
-barista_tc07: get selected drink 
 """
 
+def test_drop_init():
+	# drop table if exists
+	member = coffeeTeam()
+	result = member.drop_all_tables(test_db)
+	assert result == True
+	
+def test_init():
+	# init accounts
+	manager = coffeeManager()
+	result1 = manager.add_member("Kate","manager", "pass123", test_db)
+	barista = coffeeBarista()
+	result2 = barista.add_member("Alice","barista", "pass123", test_db)
+	
+def test_barista_tc01():
+	# make order and save
+	barista = coffeeBarista()
+	result = barista.make_order("barista", "12:12:12 - 04/11/2018", 1.99, 2, 1, test_db)
+	assert result > 0	
