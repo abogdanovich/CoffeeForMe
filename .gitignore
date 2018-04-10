@@ -7,3 +7,6 @@ src/*.db
 *.pyc
 src/*.pyc
 src/log/*.log
+../.pytest_cache/
+.pytest_cache/
+
