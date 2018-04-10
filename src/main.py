@@ -24,15 +24,14 @@ if __name__ == '__main__':
 		Options and arguments without login options:
 
 		-i		: interactive mode
-		-a 		: create a new coffee team member `coffee.py -a manager Alex passwd`
+		-a 		: create a new coffee team member: `app -a manager|barista user passwd`
 		____________________________________________________
 		Options and arguments under logged user:
 		-u		: run a command under user:
-				`coffee.py -u Alex passwd report`
-				`coffee.py -u Alex passwd get_drinks`
-				`coffee.py -u Alex passwd get_options`
-				`coffee.py -u Alex passwd add_drink {drink_name} {drink_price}`
-				`coffee.py -u Alex passwd order_drink {drink_name} {drink_options}`
+				`app -u user passwd get_report`
+				`app -u user passwd get_drinks`
+				`app -u user passwd add_drink "drink_name" "drink_price"`
+				`app -u user passwd order_drink "drink_name" "drink_options"`
 		____________________________________________________
 		"""
 	else:
@@ -48,32 +47,38 @@ if __name__ == '__main__':
 		if (sys.argv[1] == "-u"):
 			#run command under user login + passwd {command}
 			# try to log in
-			user = func.try_to_login(sys.argv[2],sys.argv[3])
-			if not user: 
-				func.log("error", "Wrong user or password is used")
+			if (len(sys.argv) < 4):
+				print """
+				Options and arguments under logged user:
+				`app -u user passwd get_report`
+				`app -u user passwd get_drinks`
+				`app -u user passwd add_drink "drink_name" "drink_price"`
+				`app -u user passwd order_drink "drink_name" "drink_options"`
+				"""
 			else:
-				if (sys.argv[4] == "report"):
-					if user[2] == "manager":
-						func.get_revenue_report()
-				elif (sys.argv[4] == "get_drinks"):
-					drinks = func.get_drinks()
-					for drink in drinks:
-						# show drinks with id - name - price
-						print "[{}] - {} $({})".format(drink[0], drink[1], drink[2])
-				elif (sys.argv[4] == "add_drink"):
-					if user[2] == "manager":
-						# regular add drink into db under manager
-						func.add_new_drink(sys.argv[5], sys.argv[6])
-				#elif (sys.argv[4] == "get_optons"):
-				#	func.get_options()
-				#	print "asd"
-				elif (sys.argv[4] == "order_drink"):
-					# make an order under barista
-					if user[2] == "barista":
-						# def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
-						func.save_order(user[0], sys.argv[5], list(sys.argv[5]), user[0])
-						
-						
+				user = func.try_to_login(sys.argv[2],sys.argv[3])
+				if not user: 
+					func.log("error", "Wrong user or password is used")
+				else:
+					if (sys.argv[4] == "report"):
+						if user[2] == "manager":
+							func.get_revenue_report()
+					elif (sys.argv[4] == "get_drinks"):
+						func.get_drinks()
+						print "Drink options"
+						func.get_options()
+							
+					elif (sys.argv[4] == "add_drink"):
+						if user[2] == "manager":
+							# regular add drink into db under manager
+							func.add_new_drink(sys.argv[5], sys.argv[6])
+					elif (sys.argv[4] == "order_drink"):
+						# make an order under barista
+						if user[2] == "barista":
+							# def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
+							func.save_order(user[0], sys.argv[5], list(sys.argv[5]), user[0])
+					if (sys.argv[4] == "optons"):
+						print "call options"
 		if (sys.argv[1] == "-i"):
 			# interactive mode
 			while True:

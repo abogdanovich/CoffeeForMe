@@ -6,12 +6,15 @@
 	Project classes are placed here.
 """
 import sqlite3
+import os
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
 
 
 class coffeeTeam(object):
 	"""Base class"""
 	
-	def __init__(self, name=None, role=None, password=None, db="db.db"):
+	def __init__(self, name=None, role=None, password=None, db="{}/db.db".format(current_dir)):
 		"""save team member with his name and company role into db"""
 		self.name = name
 		self.role = role
