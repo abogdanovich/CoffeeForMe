@@ -8,6 +8,7 @@
 import sqlite3
 import os
 
+# set the current script dir 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -15,6 +16,7 @@ class coffeeTeam(object):
 	"""Base class"""
 	
 	def drop_all_tables(self, db="{}/db.db".format(current_dir)):
+		"""remove all db tables"""
 		data = False
 		try:
 			connection = sqlite3.connect(db)
@@ -49,6 +51,7 @@ class coffeeTeam(object):
 		return data
 
 	def add_member(self, name=None, role=None, password=None, db="{}/db.db".format(current_dir)):
+		"""add new member"""
 		data = False
 		if (name != "") and (password != ""):
 			
@@ -79,7 +82,6 @@ class coffeeTeam(object):
 class coffeeManager(coffeeTeam):
 	"""Manager class with appropriate functions"""
 	
-	# TODO - FAILED when no records in orders!!!! fix that
 	def get_revenue(self, db="{}/db.db".format(current_dir)):
 		"""generate Manager revenue report in summary table"""
 		data = False
@@ -181,7 +183,8 @@ class coffeeBarista(coffeeTeam):
 			finally:
 				if connection:
 					connection.close()
-		return data				
+		return data
+	
 	def get_member(self, role="barista", db="{}/db.db".format(current_dir)):
 		"""get the list of all Barista"""
 		data = False

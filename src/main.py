@@ -36,9 +36,8 @@ if __name__ == '__main__':
 		"""
 	else:
 		if (sys.argv[1] == "-a"):
-			"""add a new team member"""
+			# add a new team member
 			if (sys.argv[2] == "manager"):
-				# coffe.py -a manager Alex pass123
 				manager = coffeeManager()
 				manager.add_member(sys.argv[3],sys.argv[2], sys.argv[4])
 			elif (sys.argv[2] == "barista"):
@@ -47,8 +46,7 @@ if __name__ == '__main__':
 			else:
 				func.log("error", "Wrong member's role is selected: manager|barista")
 		if (sys.argv[1] == "-u"):
-			#run command under user login + passwd {command}
-			# try to log in
+			# run command under user login + passwd {command}
 			if (len(sys.argv) < 4):
 				print """
 				Options and arguments under logged user:
@@ -77,7 +75,6 @@ if __name__ == '__main__':
 					elif (sys.argv[4] == "order_drink"):
 						# make an order under barista
 						if user[2] == "barista":
-							# def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
 							func.save_order(session_role, user[0], sys.argv[5], list(sys.argv[5]), user[0])
 		if (sys.argv[1] == "-i"):
 			# interactive mode

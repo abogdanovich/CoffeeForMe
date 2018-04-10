@@ -31,7 +31,6 @@ DEFAULT_DRINK = {
 	"Macchiato": 3.99
 }
 
-
 def log(level, msg):
 	# make sure that we're logging everyone 
 	date = datetime.datetime.now()
@@ -45,7 +44,6 @@ def log(level, msg):
 	elif level == "error":
 		logging.error("{}: {}".format(dt,msg))
 		
-
 def show_manager_menu(session_user, session_role):
 	# manager menu
 	x = PrettyTable()
