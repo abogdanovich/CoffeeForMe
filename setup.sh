@@ -17,5 +17,6 @@ pytest ~/abogdanovich_test/coffee_project/CoffeeForMe/src/test/test_coffeeTeam.p
 pytest ~/abogdanovich_test/coffee_project/CoffeeForMe/src/test/test_coffeeBarista.py
 pytest ~/abogdanovich_test/coffee_project/CoffeeForMe/src/test/test_coffeeManager.py
 # run main script
+cd ~/abogdanovich_test/coffee_project/CoffeeForMe/src
 ~/abogdanovich_test/coffee_project/bin/python main.py -h
 
