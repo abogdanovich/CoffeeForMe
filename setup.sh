@@ -6,10 +6,7 @@ cd ~/abogdanovich_test
 virtualenv --no-site-packages coffee_project
 cd ~/abogdanovich_test/coffee_project/
 source ~/abogdanovich_test/coffee_project/bin/activate
-<<<<<<< HEAD
 
-=======
->>>>>>> 9443f92c2ae7170222475b998e7dc946f93ced12
 git clone https://github.com/abogdanovich/CoffeeForMe.git
 cd ~/abogdanovich_test/coffee_project/CoffeeForMe
 ~/abogdanovich_test/coffee_project/bin/pip install -r requirements.txt
@@ -22,7 +19,3 @@ pytest ~/abogdanovich_test/coffee_project/CoffeeForMe/src/test/test_coffeeManage
 cd ~/abogdanovich_test/coffee_project/CoffeeForMe/src
 ~/abogdanovich_test/coffee_project/bin/python main.py -h
 exec /bin/bash
-<<<<<<< HEAD
-
-=======
->>>>>>> 9443f92c2ae7170222475b998e7dc946f93ced12
