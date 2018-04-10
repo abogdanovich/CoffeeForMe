@@ -3,7 +3,7 @@ include/*
 lib/*
 local/*
 pip-selfcheck.json
-CoffeeForMe/*.db
+src/*.db
 *.pyc
-CoffeeForMe/*.pyc
-CoffeeForMe/log/*.log
+src/*.pyc
+src/log/*.log
