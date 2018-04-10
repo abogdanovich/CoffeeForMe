@@ -14,20 +14,27 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 class coffeeTeam(object):
 	"""Base class"""
 	
-	def __init__(self, name=None, role=None, password=None, db="{}/db.db".format(current_dir)):
-		"""save team member with his name and company role into db"""
-		self.name = name
-		self.role = role
-		self.password = password
-		self.db = db
-		if (name is not None):
-			self.add_member()
-		
-	def get_member(self, name=None, password=None):
+	def drop_all_tables(self, db="{}/db.db".format(current_dir)):
+		data = False
+		try:
+			connection = sqlite3.connect(db)
+			with connection:
+				result = connection.execute("DROP TABLE IF EXISTS 'team';")
+				result = connection.execute("DROP TABLE IF EXISTS 'orders';")
+				result = connection.execute("DROP TABLE IF EXISTS 'drinks';")
+				data = True
+		except sqlite3.Error as e:
+			print "DB error: [{}]".format(e)
+		finally:
+			if connection:
+				connection.close()
+		return data
+					
+	def get_member(self, name=None, password=None, db="{}/db.db".format(current_dir)):
 		"""get the list of all team members"""
 		data = False
 		try:
-			connection = sqlite3.connect(self.db)
+			connection = sqlite3.connect(db)
 			with connection:
 				result = connection.execute("SELECT * FROM team WHERE name=? AND password=?", (name, password))
 				check_user = result.fetchone()
@@ -39,43 +46,47 @@ class coffeeTeam(object):
 		finally:
 			if connection:
 				connection.close()
+		print data
 		return data
 
-	def add_member(self):
+	def add_member(self, name=None, role=None, password=None, db="{}/db.db".format(current_dir)):
 		data = False
-		try:
-			connection = sqlite3.connect(self.db)
-			with connection:
-				connection.execute('''CREATE TABLE IF NOT EXISTS team (
-								   id INTEGER PRIMARY KEY AUTOINCREMENT,
-								   name TEXT,
-								   password TEXT,
-								   role TEXT
-								   );''')
-				if (self.role is None):
-					self.role = 'unknown'
-				connection.execute("INSERT INTO team (name, password, role) VALUES (?,?,?);", (self.name, self.password, self.role))
-				result = connection.execute("SELECT last_insert_rowid()")
-				record_id = result.fetchone()
-				# return a new record's ID
-				data = record_id[0]
-		except sqlite3.Error as e:
-			print "DB error: [{}]".format(e)
-		finally:
-			if connection:
-				connection.close()
-		return data					
+		if (name != "") and (password != ""):
+			
+			try:
+				connection = sqlite3.connect(db)
+				with connection:
+					connection.execute('''CREATE TABLE IF NOT EXISTS team (
+									   id INTEGER PRIMARY KEY AUTOINCREMENT,
+									   name TEXT NOT NULL,
+									   password TEXT NOT NULL,
+									   role TEXT NOT NULL
+									   );''')
+					if (role is None):
+						role = 'unknown'
+					connection.execute("INSERT INTO team (name, password, role) VALUES (?,?,?);", (name, password, role))
+					result = connection.execute("SELECT last_insert_rowid()")
+					record_id = result.fetchone()
+					# return a new record's ID
+					data = record_id[0]
+			except sqlite3.Error as e:
+				print "DB error: [{}]".format(e)
+			finally:
+				if connection:
+					connection.close()
+		print data
+		return data
 
 
 class coffeeManager(coffeeTeam):
 	"""Manager class with appropriate functions"""
 	
 	# TODO - FAILED when no records in orders!!!! fix that
-	def get_revenue_report(self):
+	def get_revenue_report(self, db="{}/db.db".format(current_dir)):
 		"""generate Manager revenue report in summary table"""
 		data = False
 		try:
-			connection = sqlite3.connect(self.db)
+			connection = sqlite3.connect(db)
 			with connection:
 				result = connection.execute("""
 					SELECT team.id, team.name as barman, COUNT(*) as sales, SUM(orders.price) as total
@@ -93,11 +104,11 @@ class coffeeManager(coffeeTeam):
 				connection.close()
 		return data						
 		
-	def get_member(self, role="manager"):
+	def get_member(self, role="manager", db="{}/db.db".format(current_dir)):
 		"""get the list of all Managers"""
 		data = False
 		try:
-			connection = sqlite3.connect(self.db)
+			connection = sqlite3.connect(db)
 			with connection:
 				result = connection.execute("SELECT * FROM team WHERE role=?",(role,))
 				data = result.fetchall()
@@ -108,16 +119,16 @@ class coffeeManager(coffeeTeam):
 				connection.close()
 		return data
 	
-	def add_drink(self, name, price):
+	def add_drink(self, name, price, db="{}/db.db".format(current_dir)):
 		"""add a new drink into db"""
 		data = False
 		try:
-			connection = sqlite3.connect(self.db)
+			connection = sqlite3.connect(db)
 			with connection:
 				connection.execute('''CREATE TABLE IF NOT EXISTS drink (
 								   id INTEGER PRIMARY KEY AUTOINCREMENT,
-								   name TEXT,
-								   price REAL
+								   name TEXT NOT NULL,
+								   price REAL NOT NULL
 								   );''')
 				connection.execute("INSERT INTO drink (name, price) VALUES (?,?);", (name, price))
 				result = connection.execute("SELECT last_insert_rowid()")
@@ -135,9 +146,10 @@ class coffeeManager(coffeeTeam):
 class coffeeBarista(coffeeTeam):
 	"""Manager class with appropriate functions"""
 	
-	def get_drink_list(self, drink_id=None):
+	def get_drink_list(self, drink_id=None, db="{}/db.db".format(current_dir)):
 		"""return drink price"""
-		connection = sqlite3.connect(self.db)
+		data = False
+		connection = sqlite3.connect(db)
 		with connection:
 			if drink_id != None:
 				result = connection.execute("SELECT * FROM drink WHERE id=?",(drink_id))
@@ -146,36 +158,37 @@ class coffeeBarista(coffeeTeam):
 			data = result.fetchall()
 			return data		
 		
-	def make_order(self, date, price, seller_id, drink_id):
+	def make_order(self, role, date, price, seller_id, drink_id, db="{}/db.db".format(current_dir)):
 		"""make order and save it into DB"""
 		data = False
-		try:
-			connection = sqlite3.connect(self.db)
-			with connection:
-				connection.execute('''CREATE TABLE IF NOT EXISTS orders (
-								   id INTEGER PRIMARY KEY AUTOINCREMENT,
-								   order_date DATETIME,
-								   price REAL,
-								   seller_id INTEGER,
-								   drink_id INTEGER
-				);''')
-				
-				connection.execute('INSERT INTO orders (order_date, price, seller_id, drink_id) VALUES (?,?,?,?);', (date, price, seller_id, drink_id))
-				result = connection.execute("SELECT last_insert_rowid()")
-				record_id = result.fetchone()
-				# return a new record's ID
-				data = record_id[0]
-		except sqlite3.Error as e:
-			print "DB error: [{}]".format(e)
-		finally:
-			if connection:
-				connection.close()
+		if role == "barista":
+			try:
+				connection = sqlite3.connect(db)
+				with connection:
+					connection.execute('''CREATE TABLE IF NOT EXISTS orders (
+									   id INTEGER PRIMARY KEY AUTOINCREMENT,
+									   order_date DATETIME NOT NULL,
+									   price REAL NOT NULL,
+									   seller_id INTEGER NOT NULL,
+									   drink_id INTEGER NOT NULL
+					);''')
+					
+					connection.execute('INSERT INTO orders (order_date, price, seller_id, drink_id) VALUES (?,?,?,?);', (date, price, seller_id, drink_id))
+					result = connection.execute("SELECT last_insert_rowid()")
+					record_id = result.fetchone()
+					# return a new record's ID
+					data = record_id[0]
+			except sqlite3.Error as e:
+				print "DB error: [{}]".format(e)
+			finally:
+				if connection:
+					connection.close()
 		return data				
-	def get_member(self, role="barista"):
+	def get_member(self, role="barista", db="{}/db.db".format(current_dir)):
 		"""get the list of all Barista"""
 		data = False
 		try:
-			connection = sqlite3.connect(self.db)
+			connection = sqlite3.connect(db)
 			with connection:
 				result = connection.execute("SELECT * FROM team WHERE role=?",(role,))
 				data = result.fetchall()

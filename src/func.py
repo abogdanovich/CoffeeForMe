@@ -91,7 +91,8 @@ def add_new_team_member():
 		new_member.append(user_input[0])
 		new_member.append(user_input[1])
 		# create a new team member
-		manager = coffeeTeam(new_member[1],new_member[0],new_member[2])
+		manager = coffeeManager()
+		manager.add_member(new_member[1],new_member[0],new_member[2])
 		if manager:
 			log("info", "A new user is added: {}-{}-{}".format(new_member[1],new_member[0],new_member[2]))
 	elif (user_input == "barista"):
@@ -102,7 +103,8 @@ def add_new_team_member():
 		new_member.append(user_input[0])
 		new_member.append(user_input[1])
 		# create a new team member
-		barista = coffeeTeam(new_member[1],new_member[0],new_member[2])
+		barista = coffeeBarista()
+		barista.add_member(new_member[1],new_member[0],new_member[2])
 		if barista:
 			log("info", "A new user is added: {}-{}-{}".format(new_member[1],new_member[0],new_member[2]))
 
@@ -166,7 +168,7 @@ def get_drinks():
 	x.align = "l"
 	print(x)
 	
-def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
+def save_order(session_role, session_id, drink_id=None, drink_options=None, seller_id=None):
 	date = datetime.datetime.now()
 	dt = date.strftime("%H:%M:%S - %m/%d/%y")
 	# show the list of drinks and ask
@@ -185,6 +187,7 @@ def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
 		# seller_id
 		# make_order(self, date, price, seller_id, drink_id):
 		result = barista.make_order(
+			session_role,
 			dt,
 			drink_price,
 			seller_id,
@@ -258,8 +261,9 @@ def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
 			except ValueError as e:
 				log("error", "Make order error, wrong params: {}".format(e))
 					
-def add_new_drink(name=None, price=None):
+def add_new_drink(name=None, price=None, db=None):
 	# add a new drink into db
+	data = False
 	try:
 		if name == None and price == None:
 			user_input = raw_input("Please enter a new drink and price ")
@@ -270,9 +274,9 @@ def add_new_drink(name=None, price=None):
 			user_input.append(name)
 			user_input.append(price)
 		manager = coffeeManager()
-		result = manager.add_drink(user_input[0], float(user_input[1]))
-		if result:
+		data = manager.add_drink(user_input[0], float(user_input[1]), db)
+		if data:
 			log("info", "A new drink is added: {} $({})".format(user_input[0], user_input[1]))
 	except ValueError as e:
-		print("Input error: {}".format(e))
-		log("error", "Input error during adding new drink: {}".format(e)) 
+		log("error", "Input error during adding new drink: {}".format(e))
+	return data

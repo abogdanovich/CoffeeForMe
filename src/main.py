@@ -39,9 +39,11 @@ if __name__ == '__main__':
 			"""add a new team member"""
 			if (sys.argv[2] == "manager"):
 				# coffe.py -a manager Alex pass123
-				manager = coffeeManager(sys.argv[3],sys.argv[2], sys.argv[4])
+				manager = coffeeManager()
+				manager.add_member(sys.argv[3],sys.argv[2], sys.argv[4])
 			elif (sys.argv[2] == "barista"):
-				barista = coffeeBarista(sys.argv[3],sys.argv[2], sys.argv[4])
+				barista = coffeeBarista()
+				barista.add_member(sys.argv[3],sys.argv[2], sys.argv[4])
 			else:
 				func.log("error", "Wrong member's role is selected: manager|barista")
 		if (sys.argv[1] == "-u"):
@@ -76,7 +78,7 @@ if __name__ == '__main__':
 						# make an order under barista
 						if user[2] == "barista":
 							# def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
-							func.save_order(user[0], sys.argv[5], list(sys.argv[5]), user[0])
+							func.save_order(session_role, user[0], sys.argv[5], list(sys.argv[5]), user[0])
 					if (sys.argv[4] == "optons"):
 						print "call options"
 		if (sys.argv[1] == "-i"):
