@@ -7,7 +7,7 @@
 1. Download https://github.com/abogdanovich/CoffeeForMe/blob/master/setup.sh and run (chmod +x script if necessary)
 2. Bash script will automatically prepare the required environment. Don't worry and relax:
    2.1 script will create a new folder: abogdanovich_test \ virtual env and active it
-   2.2 then git clone (git is required) the whole prject from https://github.com/abogdanovich/CoffeeForMe/
+   2.2 then git clone (git is required) the whole project from https://github.com/abogdanovich/CoffeeForMe/
    2.3 run the main script from CoffeeForMe/src/main.py -h (to help with commands)
 3. After that, script will call pytest framework and run the list of test cases to check the overall project integrity
 4. Now, you can create your own CoffeeForMe team and make some orders. Just type the following:
