@@ -12,7 +12,7 @@ git clone https://github.com/abogdanovich/CoffeeForMe.git
 ~/abogdanovich_test/coffee_project/bin/python CoffeeForMe/src/main.py -h
 
 # run pytest
-cd ~/abogdanovich_test/coffee_project/CoffeeForMe
+cd ~/abogdanovich_test/coffee_project/CoffeeForMe/src
 pytest ~/abogdanovich_test/coffee_project/CoffeeForMe/src/test/test_coffeeTeam.py
 pytest ~/abogdanovich_test/coffee_project/CoffeeForMe/src/test/test_coffeeBarista.py
 pytest ~/abogdanovich_test/coffee_project/CoffeeForMe/src/test/test_coffeeManager.py

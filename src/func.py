@@ -139,10 +139,10 @@ def get_revenue_report():
 	log("info", "generated revenue menu")
 	manager = coffeeManager()
 	report = manager.get_revenue()
-	if report:
+	if report[0]:
 		grand_total = 0
 		x.field_names = ["Barman", "Number os sales", "Total $"]
-		for order in report:
+		for order in report[0]:
 			x.add_row([order[1], order[2], order[3]])
 			grand_total += order[3]
 		x.align = "l"
@@ -251,6 +251,7 @@ def save_order(session_role, session_id, drink_id=None, drink_options=None, sell
 					if (save_order == "y"): 
 						# make_order(self, date, price, seller_id, drink_id):
 						result = barista.make_order(
+							session_role,
 							dt,
 							drink_price,
 							session_id,
@@ -261,7 +262,7 @@ def save_order(session_role, session_id, drink_id=None, drink_options=None, sell
 			except ValueError as e:
 				log("error", "Make order error, wrong params: {}".format(e))
 					
-def add_new_drink(name=None, price=None, db=None):
+def add_new_drink(name=None, price=None, db="{}/db.db".format(current_dir)):
 	# add a new drink into db
 	data = False
 	try:

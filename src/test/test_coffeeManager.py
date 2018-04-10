@@ -60,4 +60,4 @@ def test_manager_tc04():
 	barista.make_order("barista", "12:12:12 - 04/11/2018", 10.99, 2, 1, test_db)
 	manager = coffeeManager()
 	result = manager.get_revenue(test_db)
-	assert result == 19.96
+	assert result[1] == 19.96

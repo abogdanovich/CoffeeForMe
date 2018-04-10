@@ -62,7 +62,7 @@ if __name__ == '__main__':
 				if not user: 
 					func.log("error", "Wrong user or password is used")
 				else:
-					if (sys.argv[4] == "report"):
+					if (sys.argv[4] == "get_report"):
 						if user[2] == "manager":
 							func.get_revenue_report()
 					elif (sys.argv[4] == "get_drinks"):
@@ -79,8 +79,6 @@ if __name__ == '__main__':
 						if user[2] == "barista":
 							# def save_order(session_id, drink_id=None, drink_options=None, seller_id=None):
 							func.save_order(session_role, user[0], sys.argv[5], list(sys.argv[5]), user[0])
-					if (sys.argv[4] == "optons"):
-						print "call options"
 		if (sys.argv[1] == "-i"):
 			# interactive mode
 			while True:
@@ -126,7 +124,7 @@ if __name__ == '__main__':
 						continue
 					else:
 						# make the order and save it
-						func.save_order(session_id)
+						func.save_order(session_role, session_id)
 
 				elif (selection == "9"):
 					# add a new drink into db

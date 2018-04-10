@@ -46,7 +46,6 @@ class coffeeTeam(object):
 		finally:
 			if connection:
 				connection.close()
-		print data
 		return data
 
 	def add_member(self, name=None, role=None, password=None, db="{}/db.db".format(current_dir)):
@@ -74,7 +73,6 @@ class coffeeTeam(object):
 			finally:
 				if connection:
 					connection.close()
-		print data
 		return data
 
 
@@ -85,6 +83,7 @@ class coffeeManager(coffeeTeam):
 	def get_revenue(self, db="{}/db.db".format(current_dir)):
 		"""generate Manager revenue report in summary table"""
 		data = False
+		total = 0
 		try:
 			connection = sqlite3.connect(db)
 			with connection:
@@ -95,17 +94,16 @@ class coffeeManager(coffeeTeam):
 					GROUP BY team.id
 					ORDER BY total DESC
 				""")
-				total = result.fetchall()
-				for item in total:
-					data += item[3]
+				data = result.fetchall()
+				for item in data:
+					total += item[3]
 				# return: barman | sales | sum 
 		except sqlite3.Error as e:
 			print "DB error: [{}]".format(e)
 		finally:
 			if connection:
 				connection.close()
-		print data
-		return data						
+		return data, total					
 		
 	def get_member(self, role="manager", db="{}/db.db".format(current_dir)):
 		"""get the list of all Managers"""
@@ -140,9 +138,6 @@ class coffeeManager(coffeeTeam):
 				data = record_id[0]
 		except sqlite3.Error as e:
 			print "DB error: [{}]".format(e)
-		finally:
-			if connection:
-				connection.close()
 		return data					
 
 
