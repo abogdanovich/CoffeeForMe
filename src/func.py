@@ -232,16 +232,20 @@ def save_order(user, **kwargs):
 					
 def add_new_drink(user, **kwargs):
 	# add a new drink into db
+	drink = None
+	data = None
 	try:
 		if len(kwargs) >= 2:
 			drink = {"name": kwargs["name"], "price": kwargs["price"]}			
 		else:
 			# example: Latte 2.99
 			user_input = raw_input("Please enter a new drink and price ")
-			drink = {"name": user_input.split()[0], "price": user_input.split()[1]}
-		data = user.save_drink(**drink)
-		if data:
-			log("info", "A new drink is added: {} $({})".format(drink["name"], drink["price"]))
+			if len(user_input.split()) >=2:
+				drink = {"name": user_input.split()[0], "price": user_input.split()[1]}
+		if drink is not None:			
+			data = user.save_drink(**drink)
+			if data:
+				log("info", "A new drink is added: {} $({})".format(drink["name"], drink["price"]))
 	except ValueError as e:
 		log("error", "Input error during adding new drink: {}".format(e))
 	return data
