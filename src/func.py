@@ -103,6 +103,7 @@ def add_new_team_member(**kwargs):
 def make_login(**kwargs):		
 	# try to login
 	user = None
+	user_params = None
 	try:
 		if (len(kwargs) >= 2):
 			user_params = {"name": kwargs["name"], "passwd": kwargs["passwd"]}
@@ -110,12 +111,13 @@ def make_login(**kwargs):
 			user_input = raw_input("Please enter user name password ")
 			if len(user_input.split()) >= 2:
 				user_params = {"name": user_input.split()[0], "passwd": user_input.split()[1]}
-				
-		user = coffeeTeam(**user_params)
-		if user.logged:
-			log("info", "logged as: {}".format(user.name))
-		else:
-			log("error", "failed to login with: {}-{}".format(user_input[0], user_input[1]))
+			
+		if user_params is not None:
+			user = coffeeTeam(**user_params)
+			if user.logged:
+				log("info", "logged as: {}".format(user.name))
+			else:
+				log("error", "failed to login with: {}-{}".format(user_input[0], user_input[1]))
 	except IndexError as e:
 			log("error", "failed to login: {}".format(e))
 	return user		
