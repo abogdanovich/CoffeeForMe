@@ -45,7 +45,6 @@ def log(level, msg):
 		logging.error("{}: {}".format(dt,msg))
 		
 def show_menu():
-	
 	# manager menu
 	x = PrettyTable()
 	x.field_names = ["Item", "Description"]
@@ -124,7 +123,6 @@ def make_login(**kwargs):
 def get_revenue_report(user):
 	# get the revenue report
 	grand_total = 0
-	print user
 	x = PrettyTable()
 	# get summary revenue table for manager
 	log("info", "generated revenue menu")
@@ -142,6 +140,7 @@ def get_revenue_report(user):
 	return grand_total
 
 def show_options():
+	# show drik options
 	x = PrettyTable()
 	x.field_names = ["ID", "Option", "Price"]
 	for  key, val in enumerate(DRINK_OPTION):
@@ -150,6 +149,7 @@ def show_options():
 	print(x)
 		
 def show_drinks(user):
+	# show the list of all drinks
 	drink_list = user.get_drink_list()
 	x = PrettyTable()
 	x.field_names = ["ID", "Drink", "Price"]					
