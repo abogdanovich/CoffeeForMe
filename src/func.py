@@ -122,6 +122,7 @@ def make_login(**kwargs):
 	return user		
 		
 def get_revenue_report(user):
+	# get the revenue report
 	grand_total = 0
 	print user
 	x = PrettyTable()
@@ -159,6 +160,7 @@ def show_drinks(user):
 	print(x)
 	
 def save_order(user, **kwargs):
+	# save order into db
 	try:
 		# session_role, session_id, drink_id=None, drink_options=None, seller_id=None
 		date = datetime.datetime.now()

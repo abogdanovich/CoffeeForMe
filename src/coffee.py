@@ -15,7 +15,6 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 
 class coffeeTeam(object):
 	"""Base class"""
-	
 	def __init__(self, **kwargs):
 		"""constructor of a base class"""
 		if kwargs is not None and len(kwargs) >= 2:
@@ -90,7 +89,6 @@ class coffeeTeam(object):
 	
 	def get_revenue_data(self):
 		"""get the revenue table"""
-		
 		data = False
 		if self.logged and self.role == "manager":
 			try:
@@ -140,7 +138,6 @@ class coffeeTeam(object):
 	
 	def get_drink_list(self):
 		"""return drink price"""
-		
 		data = False
 		try:
 			connection = sqlite3.connect(self.db)
@@ -149,16 +146,13 @@ class coffeeTeam(object):
 				data = result.fetchall()
 		except sqlite3.Error as e:
 			print "DB error: [{}]".format(e)
-			
 		return data
 
 	def save_order(self, **kwargs):
 		"""make order and save it into DB"""
-		
 		data = False
 		if self.logged and self.role == "barista":
 			if kwargs is not None and len(kwargs) >= 3:
-				
 				try:
 					connection = sqlite3.connect(self.db)
 					with connection:
