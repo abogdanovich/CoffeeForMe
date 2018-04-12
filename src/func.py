@@ -163,6 +163,7 @@ def show_drinks(user):
 	
 def save_order(user, **kwargs):
 	# save order into db
+	result = None
 	try:
 		# session_role, session_id, drink_id=None, drink_options=None, seller_id=None
 		date = datetime.datetime.now()
