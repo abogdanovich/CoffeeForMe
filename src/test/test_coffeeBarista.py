@@ -6,7 +6,7 @@
 	pytest for class: coffeeBarista
 """
 
-from coffee import coffeeTeam, coffeeManager, coffeeBarista
+from coffee import coffeeTeam
 import sys
 import func
 import pytest
@@ -18,21 +18,22 @@ coffeeBarista test suit:
 barista_tc01: make order and save
 """
 
-def test_drop_init():
-	# drop table if exists
-	member = coffeeTeam()
-	result = member.drop_all_tables(test_db)
-	assert result == True
+manager = {"name": "Alex", "role": "manager", "passwd": "123", "db": "test_db"}
+barista = {"name": "Max", "role": "barista", "passwd": "123", "db": "test_db"}
+drink1 = {"name": "latte", "price": 1.99, "db": "test_db"}
+drink2 = {"name": "americano", "price": 2.99, "db": "test_db"}
+order1 = {"barista": 1, "datetime": "10:41-04-12-18", "price": 4.99, "drink_id": 1, "db": "test_db"}
+order2 = {"barista": 2, "datetime": "10:41-04-12-18", "price": 2.99, "drink_id": 2, "db": "test_db"}
 	
-def test_init():
-	# init accounts
-	manager = coffeeManager()
-	result1 = manager.add_member("Kate","manager", "pass123", test_db)
-	barista = coffeeBarista()
-	result2 = barista.add_member("Alice","barista", "pass123", test_db)
-	
+# cleanup test db
+user_m = coffeeTeam(**manager)
+user_m.drop_test_tables()
+user_m = coffeeTeam(**manager)
+user_b = coffeeTeam(**barista)
+
 def test_barista_tc01():
 	# make order and save
-	barista = coffeeBarista()
-	result = barista.make_order("barista", "12:12:12 - 04/11/2018", 1.99, 2, 1, test_db)
-	assert result > 0	
+	
+	func.save_order(user_b, **order1)
+	grand_total = func.get_revenue_report(user_m)
+	assert grand_total == 4.99

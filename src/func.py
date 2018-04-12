@@ -5,7 +5,7 @@
 	Email: bogdanovich.alex@gmail.com
 	The functionality list to cover tool requirements
 """
-from coffee import coffeeTeam, coffeeManager, coffeeBarista
+from coffee import coffeeTeam
 import datetime
 import logging
 from prettytable import PrettyTable
@@ -44,110 +44,103 @@ def log(level, msg):
 	elif level == "error":
 		logging.error("{}: {}".format(dt,msg))
 		
-def show_manager_menu(session_user, session_role):
+def show_menu():
+	
 	# manager menu
 	x = PrettyTable()
 	x.field_names = ["Item", "Description"]
-	x.add_row(["2","Logout: {} ({})".format(session_user, session_role)])
-	x.add_row(["3","Revenue report"])
-	x.add_row(["9","Add a new drink"])
-	x.add_row(["0","Exit"])
-	x.align = "l"
-	print(x)
-	log("info", "requested manager menu from {}".format(session_user))
-	
-def show_barista_menu(session_user, session_role):
-	# barista menu
-	x = PrettyTable()
-	x.field_names = ["Item", "Description"]
-	x.add_row(["2","Logout: {} ({})".format(session_user, session_role)])
-	x.add_row(["4","Make order"])
-	x.add_row(["0","Exit"])
-	x.align = "l"
-	print(x)
-	log("info", "requested barista menu from {}".format(session_user))
-	
-def show_regular_menu():
-	# non logged user menu
-	x = PrettyTable()
-	x.field_names = ["Item", "Description"]
-	x.add_row(["1","Add a new team member"])
+	x.add_row(["1","Add a new user"])
 	x.add_row(["2","Login"])
 	x.add_row(["0","Exit"])
 	x.align = "l"
-	print(x)	
+	print(x)
 	
-def add_new_team_member():
+def show_menu_manager(user):
+	# manager menu
+	x = PrettyTable()
+	x.field_names = ["Item", "Description"]		
+	if (user):
+		if user.role == "manager":
+			x.add_row(["2","Logout: {} ({})".format(user.name, user.role)])
+			x.add_row(["3","Revenue report"])
+			x.add_row(["9","Add a new drink"])
+	x.add_row(["0","Exit"])
+	x.align = "l"
+	print(x)
+	
+def show_menu_barista(user):
+	# barista menu
+	x = PrettyTable()
+	x.field_names = ["Item", "Description"]		
+	if (user):
+		if user.role == "barista":
+			x.add_row(["2","Logout: {} ({})".format(user.name, user.role)])
+			x.add_row(["4","Make order"])
+	x.add_row(["0","Exit"])
+	x.align = "l"
+	print(x)	
+		
+def add_new_team_member(**kwargs):
 	# create a new team member
-	new_member = []
-	user_input = raw_input("A new CoffeeForMe team member: manager or barista? ")
-	if (user_input == "manager"):
-		# ask all what we need
-		new_member.append(user_input)
-		user_input = raw_input("Please enter user name and password ")
-		user_input = user_input.split()
-		new_member.append(user_input[0])
-		new_member.append(user_input[1])
-		# create a new team member
-		manager = coffeeManager()
-		manager.add_member(new_member[1],new_member[0],new_member[2])
-		if manager:
-			log("info", "A new user is added: {}-{}-{}".format(new_member[1],new_member[0],new_member[2]))
-	elif (user_input == "barista"):
-		# ask all what we need
-		new_member.append(user_input)
-		user_input = raw_input("Please enter user name and password ")
-		user_input = user_input.split()
-		new_member.append(user_input[0])
-		new_member.append(user_input[1])
-		# create a new team member
-		barista = coffeeBarista()
-		barista.add_member(new_member[1],new_member[0],new_member[2])
-		if barista:
-			log("info", "A new user is added: {}-{}-{}".format(new_member[1],new_member[0],new_member[2]))
-
-def try_to_login(name=None, passwd=None):		
-	# try to login
+	user = None
 	try:
-		data = False
-		member = coffeeTeam()
-		if (name == None) and (passwd == None):
-			user_input = raw_input("Please enter user name and password ")
-			user_input = user_input.split()
-			res = member.get_member(user_input[0], user_input[1])
-			if res:
-				log("info", "logged as: {}".format(res[1]))
-				data = res
+		if len(kwargs) >= 3:
+			new_user = {"role": kwargs["role"], "name": kwargs["name"], "passwd": kwargs["passwd"]}		
+		else:
+			# ask if no input params
+			user_input = raw_input("Enter a new CoffeeForMe team member like: `manager Alex passwd` ")
+			if len(user_input.split()) >= 3:
+				new_user = {"role": user_input.split()[0], "name": user_input.split()[1], "passwd": user_input.split()[2]}
+				user = coffeeTeam(**new_user)
+				if user.logged:
+						log("info", "A new user is added: {}-{}".format(user.name, user.role))
+						print("info", "A new user is added: {}-{}".format(user.name, user.role))
 			else:
-				log("error", "failed to login with: {}-{}".format(user_input[0], user_input[1]))
-		if (name != None) and (passwd != None):
-			res = member.get_member(name, passwd)
-			if res:
-				log("info", "logged as: {}".format(res[1]))
-				data = res
-			else:
-				log("error", "failed to login with: {}-{}".format(name, passwd))
+				log("error", "failed to add: not anough params")
 	except IndexError as e:
 			log("error", "failed to login: {}".format(e))
-	return data		
+	return user	
+
+def make_login(**kwargs):		
+	# try to login
+	user = None
+	try:
+		if (len(kwargs) >= 2):
+			user_params = {"name": kwargs["name"], "passwd": kwargs["passwd"]}
+		else:
+			user_input = raw_input("Please enter user name password ")
+			if len(user_input.split()) >= 2:
+				user_params = {"name": user_input.split()[0], "passwd": user_input.split()[1]}
+				
+		user = coffeeTeam(**user_params)
+		if user.logged:
+			log("info", "logged as: {}".format(user.name))
+		else:
+			log("error", "failed to login with: {}-{}".format(user_input[0], user_input[1]))
+	except IndexError as e:
+			log("error", "failed to login: {}".format(e))
+	return user		
 		
-def get_revenue_report():
+def get_revenue_report(user):
+	grand_total = 0
+	print user
 	x = PrettyTable()
 	# get summary revenue table for manager
 	log("info", "generated revenue menu")
-	manager = coffeeManager()
-	report = manager.get_revenue()
-	if report[0]:
+	# call static class method (no relation with class data)
+	data = user.get_revenue_data()
+	if data:
 		grand_total = 0
 		x.field_names = ["Barman", "Number os sales", "Total $"]
-		for order in report[0]:
+		for order in data:
 			x.add_row([order[1], order[2], order[3]])
 			grand_total += order[3]
 		x.align = "l"
 		print(x)
 		print "GRAND TOTAL: ${}".format(grand_total)
+	return grand_total
 
-def get_options():
+def show_options():
 	x = PrettyTable()
 	x.field_names = ["ID", "Option", "Price"]
 	for  key, val in enumerate(DRINK_OPTION):
@@ -155,9 +148,8 @@ def get_options():
 	x.align = "l"
 	print(x)
 		
-def get_drinks():
-	barista = coffeeBarista()
-	drink_list = barista.get_drink_list()
+def show_drinks(user):
+	drink_list = user.get_drink_list()
 	x = PrettyTable()
 	x.field_names = ["ID", "Drink", "Price"]					
 	for key, drink in enumerate(drink_list):
@@ -166,52 +158,31 @@ def get_drinks():
 	x.align = "l"
 	print(x)
 	
-def save_order(session_role, session_id, drink_id=None, drink_options=None, seller_id=None):
-	date = datetime.datetime.now()
-	dt = date.strftime("%H:%M:%S - %m/%d/%y")
-	# show the list of drinks and ask
-	if drink_id != None and seller_id != None:
-		# save drink from console (not interactivemode)
-		# list drink_id
-		barista = coffeeBarista()
-		drink = barista.get_drink_list(drink_id)	
-		# drink[2] = drink price from db
-		drink_price = drink[0][2]
-		# list drink_options
-		if drink_options != None:
-			# get the price of all drink options
-			for option in drink_options:
-				drink_price += DRINK_OPTION.values()[int(option)]
-		# seller_id
-		# make_order(self, date, price, seller_id, drink_id):
-		result = barista.make_order(
-			session_role,
-			dt,
-			drink_price,
-			seller_id,
-			drink[0][0]
-		)
-		if result:
-			log("info", "A new order is saved from console {} price: {} | drink id: {}".format(seller_id, drink_price, drink[0][0]))
-	else:
-		barista = coffeeBarista()
-		drink_list = barista.get_drink_list()
-		drink_order = []
-		if (drink_list == []):
-			log("warnig", "The list of drinks is empty!")
+def save_order(user, **kwargs):
+	try:
+		# session_role, session_id, drink_id=None, drink_options=None, seller_id=None
+		date = datetime.datetime.now()
+		dt = date.strftime("%H:%M:%S - %m/%d/%y")
+		# show the list of drinks and ask
+		if "drink_id" in kwargs:
+			order = {"barista": user.uid, "datetime": dt, "price": kwargs["price"], "drink_id": kwargs["drink_id"]}
 		else:
-			try:
-				x = PrettyTable()
-				x.field_names = ["ID", "Drink", "Price"]					
-				for key, drink in enumerate(drink_list):
-					# id name price
-					x.add_row([key, drink[1], drink[2]])
-				x.align = "l"
-				print(x)
+			order = None
+			# call static method
+			drink_list = user.get_drink_list()
+			print drink_list
+			drink_order = []
+			if (drink_list == []):
+				log("warnig", "The list of drinks is empty!")
+			else:
+				# show the list of all available drinks
+				show_drinks(user)
 				user_drink = raw_input("Please select a drink ")
+				print user_drink
 				if (int(user_drink) not in range(0,len(drink_list))):
 					log("error", "Wrong drink index")
 				else:
+					print user_drink
 					# need to grab drink id name and price
 					drink_order.append([
 							drink_list[int(user_drink)][0],
@@ -222,12 +193,7 @@ def save_order(session_role, session_id, drink_id=None, drink_options=None, sell
 					drink_order_options = []
 					while True:
 						print "Drink options | press q to exit"
-						x = PrettyTable()
-						x.field_names = ["ID", "Option", "Price"]
-						for  key, val in enumerate(DRINK_OPTION):
-							x.add_row([key, val, DRINK_OPTION[val]])
-						x.align = "l"
-						print(x)
+						show_options()
 						print "[q] - Exit"
 						user_drink_options = raw_input("Please select extra options ")
 						if (user_drink_options == "q"): break
@@ -235,6 +201,7 @@ def save_order(session_role, session_id, drink_id=None, drink_options=None, sell
 							log("error", "Wrong drink option index")
 						else:	
 							drink_order_options.append([DRINK_OPTION.keys()[int(user_drink_options)], DRINK_OPTION.values()[int(user_drink_options)]])
+					# calc the drink with options price
 					drink_price = drink_order[0][2]
 					if drink_order_options != []:
 						for options_price in drink_order_options:
@@ -244,38 +211,32 @@ def save_order(session_role, session_id, drink_id=None, drink_options=None, sell
 					x.add_row([drink_order, drink_order_options, drink_price])
 					x.align = "l"
 					print(x)
-					# ask about save order?
-					save_order = raw_input("Would you like to save order? (y|n) ")
-					if (save_order == "y"): 
-						# make_order(self, date, price, seller_id, drink_id):
-						result = barista.make_order(
-							session_role,
-							dt,
-							drink_price,
-							session_id,
-							drink_order[0][0]
-						)
-						if result:
-							log("info", "A new order is saved from menu {} price: {} | drink id: {}".format(seller_id, drink_price, drink_order[0][0]))
-			except ValueError as e:
-				log("error", "Make order error, wrong params: {}".format(e))
 					
-def add_new_drink(name=None, price=None, db="{}/db.db".format(current_dir)):
+					# ask about save order?
+					ask_save_order = raw_input("Would you like to save order? (y|n) ")
+					if ask_save_order == "y":
+						order = {"barista": user.uid, "datetime": dt, "price": drink_price, "drink_id": user_drink}
+
+		if order is not None:
+			result = user.save_order(**order)
+			if result:
+				log("info", "A new order is saved from ")					
+	except ValueError as e:
+		log("error", "Make order error, wrong params: {}".format(e))
+	return result
+					
+def add_new_drink(user, **kwargs):
 	# add a new drink into db
-	data = False
 	try:
-		if name == None and price == None:
-			user_input = raw_input("Please enter a new drink and price ")
-			# example: Latte 2.99
-			user_input = user_input.split()
+		if len(kwargs) >= 2:
+			drink = {"name": kwargs["name"], "price": kwargs["price"]}			
 		else:
-			user_input = []
-			user_input.append(name)
-			user_input.append(price)
-		manager = coffeeManager()
-		data = manager.add_drink(user_input[0], float(user_input[1]), db)
+			# example: Latte 2.99
+			user_input = raw_input("Please enter a new drink and price ")
+			drink = {"name": user_input.split()[0], "price": user_input.split()[1]}
+		data = user.save_drink(**drink)
 		if data:
-			log("info", "A new drink is added: {} $({})".format(user_input[0], user_input[1]))
+			log("info", "A new drink is added: {} $({})".format(drink["name"], drink["price"]))
 	except ValueError as e:
 		log("error", "Input error during adding new drink: {}".format(e))
 	return data

@@ -6,7 +6,7 @@
 	pytest for class: coffeeTeam
 """
 
-from coffee import coffeeTeam, coffeeManager, coffeeBarista
+from coffee import coffeeTeam
 import sys
 import func
 import pytest
@@ -19,51 +19,40 @@ team_tc01: 		create a new barista
 team_tc02: 		create a new manager
 team_tc02_1:	create member with empty params 
 team_tc03: 		get exists member details
-team_tc04: 		get NON exists member details (negative)
-team_tc05: 		drop all tables
 """
+
+manager = {"name": "Alex", "role": "manager", "passwd": "123", "db": "test_db.db"}
+barista = {"name": "Max", "role": "barista", "passwd": "123", "db": "test_db.db"}
+drink1 = {"name": "latte", "price": 1.99, "db": "test_db.db"}
+drink2 = {"name": "americano", "price": 2.99, "db": "test_db.db"}
+order1 = {"barista": 1, "datetime": "10:41-04-12-18", "price": 4.99, "drink_id": 1, "db": "test_db.db"}
+order2 = {"barista": 2, "datetime": "10:41-04-12-18", "price": 2.99, "drink_id": 2, "db": "test_db.db"}
+
+# cleanup test db
+user_m = coffeeTeam(**manager)
+user_m.drop_test_tables()
 
 def test_team_tc01():
 	# team_tc01: create a new barista
-	# name=None, role=None, password=None
-	# id = 1
-	manager = coffeeManager()
-	result = manager.add_member("Kate","manager", "pass123", test_db)
-	assert result > 0
+	user = coffeeTeam(**manager)
+	assert user.name == "Alex"
 	
 def test_team_tc02():
 	# team_tc01: create a new barista
-	# name=None, role=None, password=None
-	# id = 2
-	barista = coffeeBarista()
-	result = barista.add_member("Alice","barista", "pass123", test_db)
-	assert result > 0
+	user = coffeeTeam(**barista)
+	assert user.name == "Max"
 	
 def test_team_tc02_1():
 	# team_tc01: create a new barista
-	# name=None, role=None, password=None
-	manager = coffeeManager()
-	result = manager.add_member("","", "", test_db)
-	assert result == False
+	manager = {"name": "Alex", "db": "test_db"}
+	user = coffeeTeam(**manager)
+	assert user.name == "Alex"
 	
 def test_team_tc03():
 	# get exists member details
-	# manager Kate with id = 1
-	member = coffeeTeam()
-	result = member.get_member("Kate","pass123", test_db)
-	assert result[0] == 1
-	
-def test_team_tc04():
-	# get NON exists member details (negative)
-	member = coffeeTeam()
-	result = member.get_member("Test","123", test_db)
-	assert result == False	
-	
-def test_team_tc05():
-	# drop table if exists
-	member = coffeeTeam()
-	result = member.drop_all_tables(test_db)
-	assert result == True
+	user = coffeeTeam(**barista)
+	assert user.uid == 2
+
 
 
 	

@@ -6,7 +6,7 @@
 	pytest for class: coffeeManager
 """
 
-from coffee import coffeeTeam, coffeeManager, coffeeBarista
+from coffee import coffeeTeam
 import sys
 import func
 import pytest
@@ -21,43 +21,41 @@ manager_tc03: make order as non barista(negative)
 manager_tc04: check the GRAND TOTAL 
 """
 
-def test_drop_init():
-	# drop table if exists
-	member = coffeeTeam()
-	result = member.drop_all_tables(test_db)
-	assert result == True
-	
-def init():
-	# init accounts
-	manager = coffeeManager()
-	result1 = manager.add_member("Kate","manager", "pass123", test_db)
-	barista = coffeeBarista()
-	result2 = barista.add_member("Alice","barista", "pass123", test_db)
-	
+manager = {"name": "Alex", "role": "manager", "passwd": "123", "db": "test_db.db"}
+barista = {"name": "Max", "role": "barista", "passwd": "123", "db": "test_db.db"}
+drink1 = {"name": "latte", "price": 1.99, "db": "test_db.db"}
+drink2 = {"name": "americano", "price": 2.99, "db": "test_db.db"}
+order1 = {"barista": 1, "datetime": "10:41-04-12-18", "price": 4.99, "drink_id": 1, "db": "test_db.db"}
+order2 = {"barista": 2, "datetime": "10:41-04-12-18", "price": 2.99, "drink_id": 2, "db": "test_db.db"}	
+
+# cleanup test db
+user_m = coffeeTeam(**manager)
+user_m.drop_test_tables()
+user_m = coffeeTeam(**manager)
+user_b = coffeeTeam(**barista)
+
 def test_manager_tc01():
 	# add a new drink with correct params
-	init()
-	result = func.add_new_drink("Latte", 9.99, test_db)
+	
+	result = func.add_new_drink(user_m, **drink1)
 	assert result > 0
 
 def test_manager_tc02():
 	# add a new drink (negative)
-	result = func.add_new_drink("Latte", "no-price", test_db)
+	
+	result = func.add_new_drink(user_b, **drink1)
 	assert result == False
 
 def test_manager_tc03():
 	# make order as non barista(negative)
-	barista = coffeeBarista()
-	result = barista.make_order("invalid_role", "12:12:12 - 04/11/2018", 1.99, 1, 1, test_db)
+	result = func.save_order(user_m, **order1)
 	assert result == False
 	
 def test_manager_tc04():
 	# make order and save
-	barista = coffeeBarista()
-	barista.make_order("barista", "12:12:12 - 04/11/2018", .99, 2, 1, test_db)
-	barista.make_order("barista", "12:12:12 - 04/11/2018", 1.99, 2, 1, test_db)
-	barista.make_order("barista", "12:12:12 - 04/11/2018", 5.99, 2, 1, test_db)
-	barista.make_order("barista", "12:12:12 - 04/11/2018", 10.99, 2, 1, test_db)
-	manager = coffeeManager()
-	result = manager.get_revenue(test_db)
-	assert result[1] == 19.96
+	func.save_order(user_b, **order1)
+	func.save_order(user_b, **order1)
+	func.save_order(user_b, **order1)
+	
+	grand_total = func.get_revenue_report(user_m)
+	assert grand_total == 14.97
